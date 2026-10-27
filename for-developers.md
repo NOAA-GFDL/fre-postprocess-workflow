@@ -223,8 +223,8 @@ annotations/tagging), and under `[runtime]`, within the `root` task-family's `in
             module list
             epmt check
 
-            #### if you want to use your own conda environment, comment out 'module load {{ FRE_MODULE }}' below
-            module load {{ FRE_MODULE }}
+            #### if you want to use your own conda environment, comment out 'module load fre/...' below
+            module load fre/{{ FRE_VERSION }}
             module load gcp/2.3 hsm/1.3.0
 
             #### if you want to use your own conda environment, edit the PATH and uncomment below like so:
@@ -232,11 +232,10 @@ annotations/tagging), and under `[runtime]`, within the `root` task-family's `in
         """
 ```
 
-`FRE_MODULE` is set at the top of `flow.cylc` from `FRE_VERSION`, which `fre pp configure-yaml` writes into
-`rose-suite.conf` as `$(fre --version)`. Untagged development versions of `fre-cli` (ending in `-dev`) use the
-`fre/test` module; otherwise `fre/$FRE_VERSION` is used.
+`FRE_VERSION` is written into `rose-suite.conf` by `fre pp configure-yaml` as `$(fre --version)`. Development
+versions of `fre-cli` report `test`, so they load the `fre/test` module.
 
-Comment out the line with `module load {{ FRE_MODULE }}`. Uncomment the `export PATH=...` line to point to the folder containing 
+Comment out the line with `module load fre/...`. Uncomment the `export PATH=...` line to point to the folder containing 
 the executable you found with `which fre`. Then source the `run_pp_locally` script as before:
 ```
 # configure, install, validate, and run installed/configured workflow
