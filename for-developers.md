@@ -232,8 +232,8 @@ annotations/tagging), and under `[runtime]`, within the `root` task-family's `in
         """
 ```
 
-`FRE_VERSION` is written into `rose-suite.conf` by `fre pp configure-yaml` as `$(fre --version)`. Development
-versions of `fre-cli` report `test`, so they load the `fre/test` module.
+`FRE_VERSION` is written into `rose-suite.conf` by `fre pp configure-yaml` as `$(fre --version)`. For development
+versions of `fre-cli` (ending in `-dev`), it is set to `test` instead, so they load the `fre/test` module.
 
 Comment out the line with `module load fre/...`. Uncomment the `export PATH=...` line to point to the folder containing 
 the executable you found with `which fre`. Then source the `run_pp_locally` script as before:
