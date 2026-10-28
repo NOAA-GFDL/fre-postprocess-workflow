@@ -88,8 +88,7 @@ def form_remap_dep(grid_type: str,
 
     makets_stmt = ""
     # Loop through pp components; check components passd in script are defined in yaml config
-    for comp_info in yml_info["postprocess"]["components"]:
-        comp = comp_info.get("type")
+    for comp, comp_info in yml_info["postprocess"]["components"].items():
 
         logger.debug(f"Examining {comp}")
         if comp not in pp_components:

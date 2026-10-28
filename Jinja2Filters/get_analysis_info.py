@@ -77,12 +77,11 @@ class AnalysisScript:
             # For each component to check, confirm that its climatology section contains the requested climo chunk
             for ana_comp in config["workflow"]["components"]:
                 found_needed_inputs_for_component = False
-                for exp_comp in yaml["postprocess"]["components"]:
-                    if exp_comp["type"] == ana_comp:
-                        if 'climatology' in exp_comp:
-                            for climo_request in exp_comp["climatology"]:
-                                if climo_request["frequency"] == self.data_frequency and climo_request["interval_years"] == self.chunk.years:
-                                    found_needed_inputs_for_component = True
+                exp_comp = yaml["postprocess"]["components"].get(ana_comp)
+                if exp_comp is not None and 'climatology' in exp_comp:
+                    for climo_request in exp_comp["climatology"]:
+                        if climo_request["frequency"] == self.data_frequency and climo_request["interval_years"] == self.chunk.years:
+                            found_needed_inputs_for_component = True
                 if not found_needed_inputs_for_component:
                     raise ValueError(f"ERROR: Analysis script '{self.name}' requests climatology chunk size '{self.chunk}', but " +
                                      f"no suitable climatology sections were found in postprocess component '{ana_comp}'")
