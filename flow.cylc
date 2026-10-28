@@ -1,7 +1,7 @@
 #!jinja2
 
 {# FRE_VERSION is set in rose-suite.conf by 'fre pp configure-yaml' to $(fre --version), #}
-{# or to "test" (the fre/test module) for development versions ending in '-dev'.        #}
+{# or to "test" (the fre/test module) if $(fre --version) is 'develop'.                  #}
 {% if FRE_VERSION is not defined %}
 {{ raise("FRE_VERSION must be set in rose-suite.conf; 'fre pp configure-yaml' sets it") }}
 {% endif %}

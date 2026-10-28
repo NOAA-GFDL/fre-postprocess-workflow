@@ -177,6 +177,8 @@ workflow with the following:
 module load fre/<version>
 
 ## if instead, you want the current main branch of noaa-gfdl/fre-cli
+## (fre/test reports 'develop' for 'fre --version', so 'fre pp checkout' defaults to the
+## main branch of this repository, and the workflow tasks load fre/test)
 #module load fre/test
 
 # configure, install, validate, and run installed/configured workflow
@@ -233,7 +235,8 @@ annotations/tagging), and under `[runtime]`, within the `root` task-family's `in
 ```
 
 `FRE_VERSION` is written into `rose-suite.conf` by `fre pp configure-yaml` as `$(fre --version)`. For development
-versions of `fre-cli` (ending in `-dev`), it is set to `test` instead, so they load the `fre/test` module.
+versions of `fre-cli` (`fre --version` reports `develop`, e.g. `fre/test`), it is set to `test` instead, so they load
+the `fre/test` module.
 
 Comment out the line with `module load fre/...`. Uncomment the `export PATH=...` line to point to the folder containing 
 the executable you found with `which fre`. Then source the `run_pp_locally` script as before:
