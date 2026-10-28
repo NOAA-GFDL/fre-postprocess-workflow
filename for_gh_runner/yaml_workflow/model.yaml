@@ -1,3 +1,6 @@
+# fre-cli installed from source reports 'develop' for 'fre --version'
+fre_cli_version: "develop"
+
 fre_properties:
   - &YAML_VERSION          "test01"
   - &FRE_STEM              !join ["ppp_container/", *YAML_VERSION]
