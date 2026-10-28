@@ -2,6 +2,7 @@ name: fre-postprocess-workflow
 channels:
   - conda-forge
   - noaa-gfdl
+  - ufs-community
 dependencies:
   - python
   - pip
