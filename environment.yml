@@ -7,7 +7,7 @@ dependencies:
   - python
   - pip
   - setuptools<81
-  - noaa-gfdl::fre-cli
+  - noaa-gfdl::fre-cli==develop
   - conda-forge::pyyaml
   - conda-forge::nco
   - conda-forge::pylint
