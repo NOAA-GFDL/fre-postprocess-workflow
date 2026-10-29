@@ -23,18 +23,18 @@ def get_components(yamlfile):
     with open(yamlfile) as file_:
         yaml_ = yaml.safe_load(file_)
 
-        for component in yaml_["postprocess"]["components"]:
+        for comp_name, component in yaml_["postprocess"]["components"].items():
             # if postprocess_on key exists, evaluate value
             if "postprocess_on" in component:
                 if component['postprocess_on'] is True:
-                    components.append(component["type"])
-                    fre_logger.info("%s to be post-processed", component["type"])
+                    components.append(comp_name)
+                    fre_logger.info("%s to be post-processed", comp_name)
                 else:
-                    fre_logger.info("%s will NOT be post-processed", component["type"])
+                    fre_logger.info("%s will NOT be post-processed", comp_name)
             else:
                 # default is True, if not set
-                components.append(component["type"])
-                fre_logger.info("%s to be post-processed", component["type"])
+                components.append(comp_name)
+                fre_logger.info("%s to be post-processed", comp_name)
 
     # we want to return a list, but some other scripts are expecting a space-separated string
     #return(components)
