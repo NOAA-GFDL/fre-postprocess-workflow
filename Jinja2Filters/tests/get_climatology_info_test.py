@@ -6,17 +6,14 @@ import pytest
 import yaml
 from Jinja2Filters import get_climatology_info
 
-CONFIG = {'postprocess': {'components': [{'postprocess_on': True,
-                                           'type': 'comp1',
-                                           'sources': [{'history_file': 'comp1_month'}],
-                                           'climatology': [{'frequency': 'mon', 'interval_years': 2}]},
-                                          {'type': 'comp2',
-                                           'sources': [{'history_file': 'comp2_month'}],
-                                           'climatology': [{'frequency': 'mon', 'interval_years': 2}]},
-                                          {'postprocess_on': False,
-                                           'type': 'comp3',
-                                           'sources': [{'history_file': 'comp3_month'}],
-                                           'climatology': [{'frequency': 'mon', 'interval_years': 2}]}],
+CONFIG = {'postprocess': {'components': {'comp1': {'postprocess_on': True,
+                                                    'sources': [{'history_file': 'comp1_month'}],
+                                                    'climatology': [{'frequency': 'mon', 'interval_years': 2}]},
+                                          'comp2': {'sources': [{'history_file': 'comp2_month'}],
+                                                    'climatology': [{'frequency': 'mon', 'interval_years': 2}]},
+                                          'comp3': {'postprocess_on': False,
+                                                    'sources': [{'history_file': 'comp3_month'}],
+                                                    'climatology': [{'frequency': 'mon', 'interval_years': 2}]}},
                           'settings': {'pp_chunks': ['P1Y'],
                                        'history_segment': 'P1Y',
                                        'pp_start': '0001',
@@ -64,12 +61,11 @@ def test_two_frequencies_for_one_component(tmp_path):
     overwriting the other."""
     config = {
         'postprocess': {
-            'components': [{
-                'type': 'comp1',
+            'components': {'comp1': {
                 'sources': [{'history_file': 'comp1_month'}],
                 'climatology': [{'frequency': 'mon', 'interval_years': 2},
                                  {'frequency': 'yr', 'interval_years': 2}],
-            }],
+            }},
             'settings': {'pp_chunks': ['P1Y'],
                          'history_segment': 'P1Y',
                          'pp_start': '0001',
@@ -97,11 +93,10 @@ def _build_climatology_workflow(tmp_path, pp_chunks, interval_years, pp_start,
     graph/definitions to a real cylc install."""
     config = {
         'postprocess': {
-            'components': [{
-                'type': 'comp1',
+            'components': {'comp1': {
                 'sources': [{'history_file': 'comp1_month'}],
                 'climatology': [{'frequency': 'yr', 'interval_years': interval_years}],
-            }],
+            }},
             'settings': {'pp_chunks': pp_chunks,
                          'history_segment': 'P1Y',
                          'pp_start': pp_start,

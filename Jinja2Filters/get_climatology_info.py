@@ -27,10 +27,8 @@ def sort_pp_chunks(unsorted_strings):
 def lookup_source_for_component(yaml_, component):
     """Return list of history files associated with a pp component"""
     sources = []
-    for item in yaml_["postprocess"]["components"]:
-        if item["type"] == component:
-            for source in item["sources"]:
-                sources.append(source["history_file"])
+    for source in yaml_["postprocess"]["components"][component]["sources"]:
+        sources.append(source["history_file"])
     return sources
 
 class Climatology:
@@ -226,16 +224,16 @@ class Climatology:
 def task_generator(yaml_):
     # Retrieve the pp components
     components = []
-    for component in yaml_["postprocess"]["components"]:
+    for name, component in yaml_["postprocess"]["components"].items():
         if component.get("postprocess_on", True):
-            components.append(component["type"])
+            components.append(name)
 
     # determine pp chunk to use. require the timeaverage interval to be a multiple of pp chunk
     pp_chunks = yaml_["postprocess"]["settings"]["pp_chunks"]
     pp_start = yaml_["postprocess"]["settings"]["pp_start"]
     pp_stop = yaml_["postprocess"]["settings"]["pp_stop"]
 
-    for component in yaml_["postprocess"]["components"]:
+    for name, component in yaml_["postprocess"]["components"].items():
         if not component.get('postprocess_on', True):
             continue
         if 'climatology' in component:
@@ -259,11 +257,11 @@ def task_generator(yaml_):
                     grid = 'native'
 
                 climatology_info = Climatology(
-                    component=component["type"],
+                    component=name,
                     frequency=item["frequency"],
                     interval_years=interval_years,
                     pp_chunk=pp_chunk,
-                    sources=lookup_source_for_component(yaml_, component["type"]),
+                    sources=lookup_source_for_component(yaml_, name),
                     grid=grid,
                     pp_start=pp_start,
                     pp_stop=pp_stop

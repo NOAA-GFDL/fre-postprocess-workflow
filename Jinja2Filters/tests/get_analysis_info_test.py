@@ -6,11 +6,10 @@ from Jinja2Filters import get_analysis_info
 def _write_yaml(tmp_path, product, interval_years):
     config = {
         'postprocess': {
-            'components': [{
-                'type': 'comp1',
+            'components': {'comp1': {
                 'sources': [{'history_file': 'comp1_month'}],
                 'climatology': [{'frequency': 'mon', 'interval_years': interval_years}],
-            }],
+            }},
         },
         'analysis': {
             'ana1': {
