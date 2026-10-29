@@ -27,10 +27,8 @@ def sort_pp_chunks(unsorted_strings):
 def lookup_source_for_component(yaml_, component):
     """Return list of history files associated with a pp component"""
     sources = []
-    for item in yaml_["postprocess"]["components"]:
-        if item["type"] == component:
-            for source in item["sources"]:
-                sources.append(source["history_file"])
+    for source in yaml_["postprocess"]["components"][component]["sources"]:
+        sources.append(source["history_file"])
     return sources
 
 class Climatology:
@@ -105,19 +103,21 @@ class Climatology:
         assert chunks_per_interval == int(chunks_per_interval)
         chunks_per_interval = int(chunks_per_interval)
 
-        chunk_points = [
-            chunk['cycle_point']
-            for chunk in iter_chunks(
-                [str(self.pp_chunk)], str(history_segment),
-                self.pp_start, self.pp_stop
-            )
-        ]
+        chunks = list(iter_chunks(
+            [str(self.pp_chunk)], str(history_segment),
+            self.pp_start, self.pp_stop
+        ))
 
-        for window_start in range(0, len(chunk_points), chunks_per_interval):
-            window = chunk_points[window_start:window_start + chunks_per_interval]
-            if len(window) < chunks_per_interval:
+        for window_start in range(0, len(chunks), chunks_per_interval):
+            window_chunks = chunks[window_start:window_start + chunks_per_interval]
+            if len(window_chunks) < chunks_per_interval:
                 # Partial trailing window: not enough chunks for a climo instance.
                 continue
+            if any(chunk['is_partial'] for chunk in window_chunks):
+                # A partial (remainder) chunk doesn't cover the full climo
+                # interval, so it gets a timeseries but no climatology.
+                continue
+            window = [chunk['cycle_point'] for chunk in window_chunks]
             climo_point = window[0]
 
             graph += f"R1/{climo_point} = \"\"\"\n"
@@ -224,16 +224,16 @@ class Climatology:
 def task_generator(yaml_):
     # Retrieve the pp components
     components = []
-    for component in yaml_["postprocess"]["components"]:
+    for name, component in yaml_["postprocess"]["components"].items():
         if component.get("postprocess_on", True):
-            components.append(component["type"])
+            components.append(name)
 
     # determine pp chunk to use. require the timeaverage interval to be a multiple of pp chunk
     pp_chunks = yaml_["postprocess"]["settings"]["pp_chunks"]
     pp_start = yaml_["postprocess"]["settings"]["pp_start"]
     pp_stop = yaml_["postprocess"]["settings"]["pp_stop"]
 
-    for component in yaml_["postprocess"]["components"]:
+    for name, component in yaml_["postprocess"]["components"].items():
         if not component.get('postprocess_on', True):
             continue
         if 'climatology' in component:
@@ -257,11 +257,11 @@ def task_generator(yaml_):
                     grid = 'native'
 
                 climatology_info = Climatology(
-                    component=component["type"],
+                    component=name,
                     frequency=item["frequency"],
                     interval_years=interval_years,
                     pp_chunk=pp_chunk,
-                    sources=lookup_source_for_component(yaml_, component["type"]),
+                    sources=lookup_source_for_component(yaml_, name),
                     grid=grid,
                     pp_start=pp_start,
                     pp_stop=pp_stop

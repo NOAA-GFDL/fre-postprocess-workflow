@@ -6,17 +6,14 @@ import pytest
 import yaml
 from Jinja2Filters import get_climatology_info
 
-CONFIG = {'postprocess': {'components': [{'postprocess_on': True,
-                                           'type': 'comp1',
-                                           'sources': [{'history_file': 'comp1_month'}],
-                                           'climatology': [{'frequency': 'mon', 'interval_years': 2}]},
-                                          {'type': 'comp2',
-                                           'sources': [{'history_file': 'comp2_month'}],
-                                           'climatology': [{'frequency': 'mon', 'interval_years': 2}]},
-                                          {'postprocess_on': False,
-                                           'type': 'comp3',
-                                           'sources': [{'history_file': 'comp3_month'}],
-                                           'climatology': [{'frequency': 'mon', 'interval_years': 2}]}],
+CONFIG = {'postprocess': {'components': {'comp1': {'postprocess_on': True,
+                                                    'sources': [{'history_file': 'comp1_month'}],
+                                                    'climatology': [{'frequency': 'mon', 'interval_years': 2}]},
+                                          'comp2': {'sources': [{'history_file': 'comp2_month'}],
+                                                    'climatology': [{'frequency': 'mon', 'interval_years': 2}]},
+                                          'comp3': {'postprocess_on': False,
+                                                    'sources': [{'history_file': 'comp3_month'}],
+                                                    'climatology': [{'frequency': 'mon', 'interval_years': 2}]}},
                           'settings': {'pp_chunks': ['P1Y'],
                                        'history_segment': 'P1Y',
                                        'pp_start': '0001',
@@ -64,12 +61,11 @@ def test_two_frequencies_for_one_component(tmp_path):
     overwriting the other."""
     config = {
         'postprocess': {
-            'components': [{
-                'type': 'comp1',
+            'components': {'comp1': {
                 'sources': [{'history_file': 'comp1_month'}],
                 'climatology': [{'frequency': 'mon', 'interval_years': 2},
                                  {'frequency': 'yr', 'interval_years': 2}],
-            }],
+            }},
             'settings': {'pp_chunks': ['P1Y'],
                          'history_segment': 'P1Y',
                          'pp_start': '0001',
@@ -97,11 +93,10 @@ def _build_climatology_workflow(tmp_path, pp_chunks, interval_years, pp_start,
     graph/definitions to a real cylc install."""
     config = {
         'postprocess': {
-            'components': [{
-                'type': 'comp1',
+            'components': {'comp1': {
                 'sources': [{'history_file': 'comp1_month'}],
                 'climatology': [{'frequency': 'yr', 'interval_years': interval_years}],
-            }],
+            }},
             'settings': {'pp_chunks': pp_chunks,
                          'history_segment': 'P1Y',
                          'pp_start': pp_start,
@@ -234,3 +229,39 @@ def test_multi_chunk_climatology_runahead_does_not_overflow(tmp_path):
                 seq_point = sequence.get_next_point(seq_point)
             except TimePointDumperBoundsError as exc:
                 pytest.fail(f"cylc runahead walk went out of bounds: {exc}")
+
+
+def _climo_points(graph, task):
+    """Return the R1/<point> sections of a rendered graph that run `task`."""
+    points = []
+    for section in graph.split('R1/')[1:]:
+        point, body = section.split(' = ', 1)
+        if f'=> {task}\n' in body:
+            points.append(point[:4])
+    return points
+
+
+@pytest.mark.parametrize('pp_chunks,interval_years,pp_stop,expected', [
+    # one chunk per climatology; remainder chunk 0006-0007 is partial
+    (['P5Y'], 5, '0007', ['0001']),
+    # two chunks per climatology; second window ends in partial chunk 0016-0018
+    (['P5Y'], 10, '0018', ['0001']),
+    # no remainder: every window is complete
+    (['P5Y'], 5, '0010', ['0001', '0006']),
+])
+def test_partial_chunk_gets_no_climatology(tmp_path, pp_chunks, interval_years,
+                                           pp_stop, expected):
+    """When pp_start..pp_stop doesn't divide evenly into pp chunks, the
+    trailing partial chunk gets a (shorter) timeseries, but no
+    climatology: it doesn't cover the full climatology interval.
+    Regression test for issue #267, where e.g. a P5Y climatology over
+    years 1-7 was also scheduled at year 6.
+    """
+    flow_cylc = _build_climatology_workflow(
+        tmp_path, pp_chunks=pp_chunks, interval_years=interval_years,
+        pp_start='0001', pp_stop=pp_stop, clean_work=True,
+    )
+    graph = get_climatology_info.get_climatology_info(
+        flow_cylc.parent / 'config.yaml', 'task-graph')
+
+    assert _climo_points(graph, f'climo-yr-P{interval_years}Y_comp1') == expected

@@ -77,12 +77,10 @@ class AnalysisScript:
             # For each component to check, confirm that its climatology section contains the requested climo chunk
             for ana_comp in config["workflow"]["components"]:
                 found_needed_inputs_for_component = False
-                for exp_comp in yaml["postprocess"]["components"]:
-                    if exp_comp["type"] == ana_comp:
-                        if 'climatology' in exp_comp:
-                            for climo_request in exp_comp["climatology"]:
-                                if climo_request["frequency"] == self.data_frequency and climo_request["interval_years"] == self.chunk.years:
-                                    found_needed_inputs_for_component = True
+                exp_comp = yaml["postprocess"]["components"].get(ana_comp, {})
+                for climo_request in exp_comp.get("climatology", []):
+                    if climo_request["frequency"] == self.data_frequency and climo_request["interval_years"] == self.chunk.years:
+                        found_needed_inputs_for_component = True
                 if not found_needed_inputs_for_component:
                     raise ValueError(f"ERROR: Analysis script '{self.name}' requests climatology chunk size '{self.chunk}', but " +
                                      f"no suitable climatology sections were found in postprocess component '{ana_comp}'")
@@ -138,17 +136,33 @@ class AnalysisScript:
         if self.script_type == "independent":
             # Run every chunk (not cumulative)
             suffix = f"{self.chunk}"
-            graph += f'{self.chunk} = """\n'
+            if self.product == "av":
+                # Climatologies are only made for complete chunks, so don't
+                # recur onto a trailing partial chunk (which only gets a timeseries).
+                experiment_start, experiment_stop = self.experiment_date_range
+                n_complete_chunks = 0
+                d = experiment_start
+                while d + self.chunk - one_year <= experiment_stop:
+                    n_complete_chunks += 1
+                    d += self.chunk
+                if n_complete_chunks == 0:
+                    return ""
+                graph += f'R{n_complete_chunks}/{experiment_start}/{self.chunk} = """\n'
+            else:
+                graph += f'{self.chunk} = """\n'
 
+            # Trigger this script's task rather than the ANALYSIS-{chunk} family:
+            # the family also holds the other product's scripts, which may not
+            # recur at the same cycle points (av scripts skip partial chunks).
             if analysis_only:
-                graph += f"ANALYSIS-{suffix}?\n"
+                graph += f"analysis-{self.name}?\n"
             else:
                 if self.product == "av":
                     dep = f"COMBINE-TIMEAVGS-{self.chunk}:succeed-all"
                 else:
                     dep = f"REMAP-PP-COMPONENTS-TS-{self.chunk}:succeed-all"
 
-                graph += f"{dep} => data-catalog-{suffix} => ANALYSIS-{suffix}?\n"
+                graph += f"{dep} => data-catalog-{suffix} => analysis-{self.name}?\n"
 
             if not self.is_legacy:
                 graph += f"install-analysis-{self.name}[^] => analysis-{self.name}"
