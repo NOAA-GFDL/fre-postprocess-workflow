@@ -13,3 +13,4 @@ dependencies:
   - conda-forge::pylint
   - conda-forge::pytest
   - conda-forge::pytest-cov
+  - conda-forge::nccmp
