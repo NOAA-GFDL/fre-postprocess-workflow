@@ -224,16 +224,16 @@ class Climatology:
 def task_generator(yaml_):
     # Retrieve the pp components
     components = []
-    for name, component in yaml_["postprocess"]["components"].items():
+    for comp_name, component in yaml_["postprocess"]["components"].items():
         if component.get("postprocess_on", True):
-            components.append(name)
+            components.append(comp_name)
 
     # determine pp chunk to use. require the timeaverage interval to be a multiple of pp chunk
     pp_chunks = yaml_["postprocess"]["settings"]["pp_chunks"]
     pp_start = yaml_["postprocess"]["settings"]["pp_start"]
     pp_stop = yaml_["postprocess"]["settings"]["pp_stop"]
 
-    for name, component in yaml_["postprocess"]["components"].items():
+    for comp_name, component in yaml_["postprocess"]["components"].items():
         if not component.get('postprocess_on', True):
             continue
         if 'climatology' in component:
@@ -257,11 +257,11 @@ def task_generator(yaml_):
                     grid = 'native'
 
                 climatology_info = Climatology(
-                    component=name,
+                    component=comp_name,
                     frequency=item["frequency"],
                     interval_years=interval_years,
                     pp_chunk=pp_chunk,
-                    sources=lookup_source_for_component(yaml_, name),
+                    sources=lookup_source_for_component(yaml_, comp_name),
                     grid=grid,
                     pp_start=pp_start,
                     pp_stop=pp_stop
