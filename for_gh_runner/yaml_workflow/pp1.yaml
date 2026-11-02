@@ -1,7 +1,7 @@
 postprocess:
   components:
     ## regridded component
-    - type: "atmos_month"
+    atmos_month:
       sources:
         - history_file: "atmos_month"
       xyInterp: *PP_XYINTERP96
@@ -17,7 +17,7 @@ postprocess:
 
     ## native component
     # Ian note: this is trivially a native component, there's only a time-axis
-    - type: "atmos_scalar"
+    atmos_scalar:
       sources:
         - history_file: "atmos_scalar"
         - history_file: "atmos_global_cmip"
@@ -29,7 +29,7 @@ postprocess:
         interval_years: 2
 
     ## regridded component with slightly different atmos masking case requirements
-    - type: "atmos_month_cmip"
+    atmos_month_cmip:
       sources:
         - history_file: "atmos_month_cmip"
       xyInterp: *PP_XYINTERP96
