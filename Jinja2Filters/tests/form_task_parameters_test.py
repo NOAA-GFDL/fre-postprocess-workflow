@@ -5,25 +5,22 @@ from Jinja2Filters import form_task_parameters
 @pytest.fixture()
 def yaml_file(tmp_path):
     """example atmos and land component yaml"""
-    CONFIG = {'postprocess': {'components': [{'postprocess_on': True,
+    CONFIG = {'postprocess': {'components': {'atmos': {'postprocess_on': True,
                                  'sources': [{'history_file': 'atmos_month'},
                                              {'history_file': 'atmos_daily'}],
                                  'static': [{'source': 'atmos_month'},
                                             {'source': 'grid_spec'}],
-                                 'type': 'atmos',
                                  'xyInterp': 'true'},
-                                {'postprocess_on': True,
+                                'land': {'postprocess_on': True,
                                  'sources': [{'history_file': 'land_month'},
                                              {'history_file': 'land_daily'}],
                                  'static': [{'source': 'land_static'}],
-                                 'type': 'land',
                                  'xyInterp': 'true'},
-                                {'postprocess_on': True,
+                                'land_cubic': {'postprocess_on': True,
                                  'sources': [{'history_file': 'land_month'},
                                              {'history_file': 'land_daily'},
                                              {'history_file': 'river'}],
-                                 'static': [{'source': 'land_static'}],
-                                 'type': 'land_cubic'}]}}
+                                 'static': [{'source': 'land_static'}]}}}}
 
     # create temporary directory
     temp_dir = tmp_path
@@ -55,7 +52,7 @@ def test_retrieve_both_atmos_and_land(yaml_file):
 
 # This test does not work but Chris cannot figure out why.
 # It fails with the same error we're trying to check for:
-# E       FileNotFoundError: [Errno 2] No such file or directory: '/nbhome/c2b/git/fre-workflows/not-here'
+# E       FileNotFoundError: [Errno 2] No such file or directory: '/nbhome/c2b/git/fre-postprocess-workflow/not-here'
 # It looks good based on https://docs.pytest.org/en/stable/how-to/assert.html
 #def test_file_not_found():
 #    """Raise FileNotFoundError if yamlfile does not exist"""

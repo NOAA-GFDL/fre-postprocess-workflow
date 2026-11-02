@@ -32,8 +32,7 @@ def form_task_parameters(grid_type, temporal_type, pp_components_str, yamlfile):
 
     #
     results = []
-    for comp_info in yml_info["postprocess"]["components"]:
-        comp = comp_info.get("type")
+    for comp, comp_info in yml_info["postprocess"]["components"].items():
 
         # Check that pp_components defined matches those in the yaml file
         # Skip component if they don't match
