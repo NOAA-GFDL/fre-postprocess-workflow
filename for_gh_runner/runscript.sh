@@ -40,14 +40,10 @@ get_user_input () {
 }
 
 create_dirs () {
-    echo "IN CREATE DIRS"
-    fre --version   
     # Initialize ppp-setup
     # Set environment variables 
 #    export TMPDIR=/mnt/temp
 #    export HOME=/mnt
-    echo "AFTER EXPORT"
-    fre --version
     echo "Creating necessary paths used in workflow"
     paths=("${HOME}/pp" "${HOME}/ptmp" "${HOME}/temp")
 
@@ -104,15 +100,11 @@ fre_pp_steps () {
     #Not sure if needed because if no global.cylc found, cylc uses default, which utilizes background jobs anyway ...
     #export CYLC_CONF_PATH=/mnt/cylc-src/${name}/generic-global-config/
 
-    echo "FRE VERSION"
-    fre --version
     ## Configure the rose-suite file for the workflow
     echo -e "\nRunning fre pp configure-yaml, combining separate yaml configs into one, then writing rose-suite config file ..."
     fre -vv pp configure-yaml -e ${expname} -p ${plat} -t ${targ} -y ${yamlfile}
     check_exit_status "CONFIGURE-YAML"
-    echo "FRE VERSION"
-    fre --version
-    exit 1
+
     ## Validate the configuration files
     echo -e "\nRunning fre pp validate, validating rose-suite config file ..."
     fre -vv pp validate -e ${expname} -p ${plat} -t ${targ}
