@@ -11,8 +11,8 @@ env_setup () {
     ## Since these packages are pp workflow specific, install them here to keep the fre-cli environment in the container non-GFDL specific and update fre-cli env with specific branch development
     cd fre-cli
     pip install .
-#    conda install -p /app/cylc-flow-tools/env noaa-gfdl::hsm=1.4.0
-#    conda install -p /app/cylc-flow-tools/env noaa-gfdl::fre-nctools=2022.02.01
+    conda install -p /app/cylc-flow-tools/env noaa-gfdl::hsm=1.4.0
+    conda install -p /app/cylc-flow-tools/env noaa-gfdl::fre-nctools=2022.02.01
 
     export PATH=/mnt/.local/bin:$PATH
     cd -
@@ -40,12 +40,14 @@ get_user_input () {
 }
 
 create_dirs () {
-    
+    echo "IN CREATE DIRS"
+    fre --version   
     # Initialize ppp-setup
     # Set environment variables 
     export TMPDIR=/mnt/temp
     export HOME=/mnt
-
+    echo "AFTER EXPORT"
+    fre --version
     echo "Creating necessary paths used in workflow"
     paths=("${HOME}/pp" "${HOME}/ptmp" "${HOME}/temp")
 
@@ -64,6 +66,8 @@ create_dirs () {
             mkdir -p "$p"
         fi
     done
+    echo "AFTER CREATING PATHS"
+    fre --version
 }
 
 check_exit_status () {
@@ -138,17 +142,11 @@ main () {
     # Set user-input
     get_user_input
 
-    echo "BEFORE ENV SETUP"
-    fre --version
     env_setup
-    echo "BEFORE CREATE DIRS"
-    fre --version
 
     #Create directories needed for post-processing
     create_dirs
 
-    echo "BEFORE STEPS"
-    fre --version
     # Run the post-processing steps
     fre_pp_steps
 }
