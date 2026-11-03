@@ -8,28 +8,12 @@
 ##    - checks for the status of the workflow (before installation step)
 
 env_setup () {
-#    ## Since these packages are pp workflow specific, install them here to keep the fre-cli environment in the container non-GFDL specific
-#    micromamba install -p /app/cylc-flow-tools/env noaa-gfdl::hsm=1.4.0
-#    micromamba clean --all -y
-#    micromamba install -p /app/cylc-flow-tools/env noaa-gfdl::fre-nctools=2022.02.01
-#    micromamba clean --all -y
-#    # update fre-cli env with specific branch development
-#    cd fre-cli
-#    pip install --no-cache-dir .
-##    export PATH=/mnt/.local/bin:$PATH
-#    export PATH=~/.local/bin:$PATH
-#    cd -
-
-    echo "IN CONTAINER"
-    fre --version
-    # update fre-cli env with specific branch development
+    ## Since these packages are pp workflow specific, install them here to keep the fre-cli environment in the container non-GFDL specific and update fre-cli env with specific branch development
     cd fre-cli
     pip install .
     mamba install -p /app/cylc-flow-tools/env noaa-gfdl::hsm=1.4.0
     mamba install -p /app/cylc-flow-tools/env noaa-gfdl::fre-nctools=2022.02.01
 
-    echo "AFTER PIP INSTALL"
-    fre --version
     export PATH=/mnt/.local/bin:$PATH
     cd -
 }
