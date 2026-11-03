@@ -18,12 +18,12 @@ fre_properties:
 experiments:
   test_pp:
     settings: "settings.yaml"
-    pp:
+    postprocess:
       - "pp1.yaml"
 #    analysis:
 #      - "an1.yaml"
 
   test_pp_locally:
     settings: "local_settings.yaml"
-    pp:
+    postprocess:
       - "pp1.yaml"
