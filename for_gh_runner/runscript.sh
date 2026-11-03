@@ -10,8 +10,6 @@
 env_setup () {
     ## Since these packages are pp workflow specific, install them here to keep the fre-cli environment in the container non-GFDL specific and update fre-cli env with specific branch development
     cd fre-cli
-    cat fre/pp/configure_script_yaml.py
-    exit 1
     pip install .
     mamba install -p /app/cylc-flow-tools/env noaa-gfdl::hsm=1.4.0
     mamba install -p /app/cylc-flow-tools/env noaa-gfdl::fre-nctools=2022.02.01
@@ -104,11 +102,15 @@ fre_pp_steps () {
     #Not sure if needed because if no global.cylc found, cylc uses default, which utilizes background jobs anyway ...
     #export CYLC_CONF_PATH=/mnt/cylc-src/${name}/generic-global-config/
 
+    echo "FRE VERSION"
+    fre --version
     ## Configure the rose-suite file for the workflow
     echo -e "\nRunning fre pp configure-yaml, combining separate yaml configs into one, then writing rose-suite config file ..."
     fre -vv pp configure-yaml -e ${expname} -p ${plat} -t ${targ} -y ${yamlfile}
     check_exit_status "CONFIGURE-YAML"
-
+    echo "FRE VERSION"
+    fre --version
+    exit 1
     ## Validate the configuration files
     echo -e "\nRunning fre pp validate, validating rose-suite config file ..."
     fre -vv pp validate -e ${expname} -p ${plat} -t ${targ}
