@@ -16,7 +16,7 @@ fre_properties:
 #  platformYaml: "platforms.yaml"
 
 experiments:
-  "test_pp:
+  test_pp:
     settings: "settings.yaml"
     pp:
       - "pp1.yaml"
