@@ -8,6 +8,12 @@
 ##    - checks for the status of the workflow (before installation step)
 
 env_setup () {
+    ## CLone environment in container
+    env_location=$(echo $CONDA_PREFIX)
+    conda create --prefix ~/envs -n fre-cli-dev --clone ${env_location}
+    conda activate fre-cli-dev
+    conda env list
+
     ## Since these packages are pp workflow specific, install them here to keep the fre-cli environment in the container non-GFDL specific and update fre-cli env with specific branch development
     cd fre-cli
     pip install .
