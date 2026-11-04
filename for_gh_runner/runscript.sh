@@ -9,8 +9,7 @@
 
 env_setup () {
     ## CLone environment in container
-    env_location=$(echo $CONDA_PREFIX)
-    conda create -n cylc-flow-tools-dev --clone ${env_location}
+    conda create -n cylc-flow-tools-dev --clone cylc-flow-tools
     conda activate cylc-flow-tools-dev
     conda env list
 
