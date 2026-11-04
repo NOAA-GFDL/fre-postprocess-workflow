@@ -8,8 +8,8 @@
 ##    - checks for the status of the workflow (before installation step)
 
 env_setup () {
-    ## CLone environment in container
-    conda create -n cylc-flow-tools-dev --clone cylc-flow-tools
+    ## Clone environment in container
+    conda create -n cylc-flow-tools-dev --clone /app/cylc-flow-tools/env
     conda activate cylc-flow-tools-dev
     conda env list
 
