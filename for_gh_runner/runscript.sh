@@ -10,8 +10,8 @@
 env_setup () {
     ## CLone environment in container
     env_location=$(echo $CONDA_PREFIX)
-    conda create --prefix ~/envs/cylc-flow-tools-dev --clone ${env_location}
-    conda activate ~/envs/cylc-flow-tools-dev
+    conda create -n cylc-flow-tools-dev --clone ${env_location}
+    conda activate cylc-flow-tools-dev
     conda env list
 
     ## Since these packages are pp workflow specific, install them here to keep the fre-cli environment in the container non-GFDL specific and update fre-cli env with specific branch development
