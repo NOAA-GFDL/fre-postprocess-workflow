@@ -5,7 +5,7 @@ directories:
 # to have a faster turn-around (does not test archive data staging), use the below
   history_dir:         "/work/inl/test_cloud_runner_history_files"
   refined_history_dir: "/work/$USER/fre-wf-local-testing/refined_history"
-  pp_dir:             !join [/work/$USER/test_cloud_runner_scratch_dir/, *FRE_STEM, /, pp]
+  pp_dir:              "/work/$USER/test_cloud_runner_scratch_dir/{{ fre_properties.FRE_STEM }}/pp"
 #  analysis_dir:       !join [/nbhome/$USER/, *FRE_STEM, /, *name]
   ptmp_dir:           "/xtmp/$USER/ptmp"
 
@@ -14,10 +14,10 @@ postprocess:
     history_segment:         "P1Y"
     site:                    "ppan"
 #    site:                    "ppan_test"
-    pp_chunks:               [*PP_CHUNK96]
-    pp_start:                *EXP_AMIP_START
-    pp_stop:                 *EXP_AMIP_END
-    pp_grid_spec:            *GRID_SPEC96_LOCAL
+    pp_chunks:               ["{{ fre_properties.PP_CHUNK96 }}"]
+    pp_start:                "{{ fre_properties.EXP_AMIP_START }}"
+    pp_stop:                 "{{ fre_properties.EXP_AMIP_END }}"
+    pp_grid_spec:            "{{ fre_properties.GRID_SPEC96_LOCAL }}"
   switches:
     clean_work:              True
     do_atmos_plevel_masking: True
