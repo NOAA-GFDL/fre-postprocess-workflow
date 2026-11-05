@@ -9,6 +9,9 @@
 
 env_setup () {
     ## Clone environment in container
+    if [ conda env list | grep -q "\bcylc-flow-tools-dev\b" ]; then
+        conda remove --name cylc-flow-tools-dev --all
+    fi
     conda create -n cylc-flow-tools-dev --clone /app/cylc-flow-tools/env
     conda activate cylc-flow-tools-dev
     conda env list
