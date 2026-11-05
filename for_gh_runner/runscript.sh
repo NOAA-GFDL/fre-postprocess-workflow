@@ -9,7 +9,7 @@
 
 env_setup () {
     ## Clone environment in container
-    if [ conda env list | grep -q "${HOME}/.conda/envs/cylc-flow-tools-dev" ]; then
+    if [ -d "${HOME}/.conda/envs/cylc-flow-tools-dev" ]; then
         conda remove --prefix ${HOME}/.conda/envs/cylc-flow-tools-dev --all
     fi
     conda create -n cylc-flow-tools-dev --clone /app/cylc-flow-tools/env
