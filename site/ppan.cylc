@@ -75,3 +75,15 @@
     [[combine-statics]]
         pre-script = module load cdo nco
 {% endif %}
+
+{% if DO_ANALYSIS %}
+    [[ANALYSIS]]
+        # The legacy analysis scripts run "module purge; module load $fremodule",
+        # so put ncdump on PATH outside of Lmod where the purge does not remove it.
+        pre-script = """
+            module load netcdf-c
+            NETCDF_BIN=$(dirname $(command -v ncdump))
+            module unload netcdf-c
+            export PATH=$PATH:$NETCDF_BIN
+        """
+{% endif %}
